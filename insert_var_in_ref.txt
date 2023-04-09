@@ -1,0 +1,20 @@
+# read in the reference genome string
+with open("reference_genome.fa") as f:
+    ref_genome = f.read()
+
+# define the variant information
+chromosome = "chr1"
+position = 12345
+ref_base = "A"
+alt_base = "C"
+
+# determine the position and length of the region to replace
+start = position - 1
+end = position
+
+# replace the nucleotides in the reference genome string
+ref_genome = ref_genome[:start] + alt_base + ref_genome[end:]
+
+# write out the modified reference genome string
+with open("modified_reference_genome.fa", "w") as f:
+    f.write(ref_genome)
