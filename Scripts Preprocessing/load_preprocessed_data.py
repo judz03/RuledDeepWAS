@@ -16,11 +16,14 @@ import matplotlib.pyplot as plt
 
 # %% Load databses' data frames (just 100 lines to save memory)
 #ensembl_df = pd.read_csv('/mnt/DATA/Databases/Ensembl/Ensembl_database_ready.csv', dtype = str)
-data_path = '/home/mosotelo/Project Files/Experimentos/Databases/' #Change depending on the PC the script is being run
+data_path = '/home/msr/Documents/Experimentos/Databases/' #Change depending on the PC the script is being run
 ensembl_db_path = data_path+'Ensembl_database_ready.csv'
+#ensembl_df = pd.read_csv(ensembl_db_path,
+#                         dtype = str,
+#                         nrows=100)
 ensembl_df = pd.read_csv(ensembl_db_path,
-                         dtype = str,
-                         nrows=100)
+                         dtype = str)
+
 '''
 dbsnp_df = pd.read_csv('/mnt/DATA/Databases/dbSNP DATA/dbsnp_b154_million_samples.csv',
                        dtype = str,
