@@ -61,3 +61,32 @@ def replace_seq_info(reference_sequence:MutableSeq, variant_info:pd.Series, cont
     variant_sequence.annotations['Start of mutation'] = variant_info['start']
     variant_sequence.annotations['End of mutation'] = variant_info['end']
     return variant_sequence
+
+
+def export_variants_df(mutable_sequence: MutableSeq, variants_info:pd.DataFrame):
+    '''
+    This function exports the modified sequences with all the relevant information to a DataFrame.
+    
+    '''
+    variants_info = variants_info
+    mutable_sequence = mutable_sequence
+    variant_sequences_data = {'sequence':[],
+                          'id':[],
+                          'chromosome':[],
+                          'start':[],
+                          'end':[],
+                          'Dbxref':[],
+                          'clinical_significance':[]}
+
+    for index in range(len(variants_info)):
+        variant_sequence_info = replace_seq_info(mutable_sequence,variants_info.iloc[index])
+        variant_sequences_data['sequence'].append(variant_sequence_info.seq)
+        variant_sequences_data['id'].append(variant_sequence_info.id)
+        variant_sequences_data['chromosome'].append(variant_sequence_info.annotations['Chromosome'])
+        variant_sequences_data['start'].append(variant_sequence_info.annotations['Start of mutation'])
+        variant_sequences_data['end'].append(variant_sequence_info.annotations['End of mutation'])
+        variant_sequences_data['Dbxref'].append(variant_sequence_info.dbxrefs)
+        variant_sequences_data['clinical_significance'].append(variant_sequence_info.annotations['Clinical_significance'])
+
+    df = pd.DataFrame(variant_sequences_data)
+    return df

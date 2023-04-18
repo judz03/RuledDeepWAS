@@ -15,7 +15,7 @@ from Bio.SeqRecord import SeqRecord
 from database_io import load_db
 # Import pandas
 import pandas as pd
-from utils import replace_seq_info
+from utils import replace_seq_info, export_variants_df
 
 #%% Import the reference sequence
 databases_path = '/home/msr/Documents/Experimentos/Databases/'
@@ -47,14 +47,15 @@ variant_sequences_data = {'sequence':[],
                           'Dbxref':[],
                           'clinical_significance':[]}
 
-for index in range(len(chromosome_21_single_allele_snv)):
-    variant_sequence_info = replace_seq_info(mutable_chromosome_21,chromosome_21_single_allele_snv.iloc[index])
-    variant_sequences_data['sequence'].append(variant_sequence_info.seq)
-    variant_sequences_data['id'].append(variant_sequence_info.id)
-    variant_sequences_data['chromosome'].append(variant_sequence_info.annotations['Chromosome'])
-    variant_sequences_data['start'].append(variant_sequence_info.annotations['Start of mutation'])
-    variant_sequences_data['end'].append(variant_sequence_info.annotations['End of mutation'])
-    variant_sequences_data['Dbxref'].append(variant_sequence_info.dbxrefs)
-    variant_sequences_data['clinical_significance'].append(variant_sequence_info.annotations['Clinical_significance'])
-    
+#for index in range(len(chromosome_21_single_allele_snv)):
+#    variant_sequence_info = replace_seq_info(mutable_chromosome_21,chromosome_21_single_allele_snv.iloc[index])
+#    variant_sequences_data['sequence'].append(variant_sequence_info.seq)
+#    variant_sequences_data['id'].append(variant_sequence_info.id)
+#    variant_sequences_data['chromosome'].append(variant_sequence_info.annotations['Chromosome'])
+#    variant_sequences_data['start'].append(variant_sequence_info.annotations['Start of mutation'])
+#    variant_sequences_data['end'].append(variant_sequence_info.annotations['End of mutation'])
+#    variant_sequences_data['Dbxref'].append(variant_sequence_info.dbxrefs)
+#    variant_sequences_data['clinical_significance'].append(variant_sequence_info.annotations['Clinical_significance'])
+
+chromosome_21_modified_df = export_variants_df(chromosome_21_sequence,chromosome_21_single_allele_snv)
 # %%
