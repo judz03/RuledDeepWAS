@@ -1,0 +1,63 @@
+'''
+This is a library that contains multipleuseful functions for the preprocessing of the databases used
+in the project.
+
+Functions:
+----------
+* replace_seq_info
+'''
+# Import the necessary modules and libraries
+from Bio import SeqIO
+# To be able to modify sequences
+from Bio.Seq import MutableSeq, Seq
+# Import SeqRecord
+from Bio.SeqRecord import SeqRecord
+# Import pandas
+import pandas as pd
+
+# %% Replace the variants information in the reference sequence
+def replace_seq_info(reference_sequence:MutableSeq, variant_info:pd.Series, context:int=128)->SeqRecord:
+    # We will have to import Bio.SeqIO and Bio.Seq.MutableSeq
+    '''
+    This function replaces the information in the reference sequence with the specifications
+    of the variant databases.
+    **** LIMITED TO SNVS ****
+
+    Parameters:
+    -----------
+    reference_sequence: A MutableSeq object loaded trough Biopython which contains the reference
+    sequence of a chromosome or genome.
+
+    variant_info: Relevant characteristics about the variant which include:
+
+        * variant_seq: The information of the variant allele which contains the nucleotide(s) to 
+        replace in the reference sequence.
+        
+        * start: The coordenate where the variation in the reference sequence begins.
+
+        * end: The coordenate where the variation in the reference sequence ends.
+
+    context: The number of bp after and before the start and end, respectively, to be considered
+    to produce a subsequence with context surrounding the variant.
+    '''
+    mutable_sequence = MutableSeq(reference_sequence)
+    variant_info = variant_info
+    start = int(variant_info['start'])-1
+    end = int(variant_info['end'])-1
+    # Insert mutation
+    mutable_sequence[start] = variant_info['Variant_seq']
+    # Extract subsequence with mutation and context
+    variant_sequence = mutable_sequence[start-context:end+context+1]
+    variant_sequence = variant_sequence.upper()
+    # Convert into unmutable sequence
+    variant_sequence = Seq(variant_sequence)
+    # Turn into a SeqRecord object and associate relevant information
+    variant_sequence = SeqRecord(variant_sequence)
+    variant_sequence.id = variant_info['ID']
+    variant_sequence.name = 'Sequence containing the variant with ID: ' + variant_info['ID']
+    variant_sequence.dbxrefs = [variant_info['Dbxref']]
+    variant_sequence.annotations['Chromosome'] = variant_info['seqid']
+    variant_sequence.annotations['Clinical_significance'] = variant_info['clinical_significance']
+    variant_sequence.annotations['Start of mutation'] = variant_info['start']
+    variant_sequence.annotations['End of mutation'] = variant_info['end']
+    return variant_sequence
