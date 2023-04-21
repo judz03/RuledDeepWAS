@@ -23,6 +23,21 @@ reference_genome_path = databases_path + 'GCA_000001405.28/GCA_000001405.28_GRCh
 reference_genome = SeqIO.index(reference_genome_path,"fasta")
 
 ensembl_db = load_db(databases_path+'Ensembl_database_ready.csv')
+
+# %% Extract the SeqRecord of the chromosomes into a dict and then put them into a dataframe
+# DO NOT RUN UNLESS ENOUGH RAM
+reference_genome_keys = list(reference_genome.keys())
+chromosome_keys = []
+for key in reference_genome_keys:
+    if 'CM' in key:
+        chromosome_keys.append(key)
+
+chromosomes_dict = {}
+
+for key in chromosome_keys:
+    chromosomes_dict[key] = reference_genome[key] # Extract the correspondent SeqRecords of each chromosome
+
+
 #%% We will work with the chromosome 21 because it's the shortest
 chromosome_21_record = reference_genome["CM000683.2"] # The key is the GenBank identifier
 chromosome_21_sequence = chromosome_21_record.seq
@@ -47,15 +62,7 @@ variant_sequences_data = {'sequence':[],
                           'Dbxref':[],
                           'clinical_significance':[]}
 
-#for index in range(len(chromosome_21_single_allele_snv)):
-#    variant_sequence_info = replace_seq_info(mutable_chromosome_21,chromosome_21_single_allele_snv.iloc[index])
-#    variant_sequences_data['sequence'].append(variant_sequence_info.seq)
-#    variant_sequences_data['id'].append(variant_sequence_info.id)
-#    variant_sequences_data['chromosome'].append(variant_sequence_info.annotations['Chromosome'])
-#    variant_sequences_data['start'].append(variant_sequence_info.annotations['Start of mutation'])
-#    variant_sequences_data['end'].append(variant_sequence_info.annotations['End of mutation'])
-#    variant_sequences_data['Dbxref'].append(variant_sequence_info.dbxrefs)
-#    variant_sequences_data['clinical_significance'].append(variant_sequence_info.annotations['Clinical_significance'])
+# To extract all the SeqRecords in a dictionary and save them in a df
+
 
 chromosome_21_modified_df = export_variants_df(chromosome_21_sequence,chromosome_21_single_allele_snv)
-# %%

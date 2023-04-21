@@ -5,6 +5,7 @@ in the project.
 Functions:
 ----------
 * replace_seq_info
+* export_variants_df
 '''
 # Import the necessary modules and libraries
 from Bio import SeqIO
