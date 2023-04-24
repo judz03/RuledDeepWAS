@@ -41,14 +41,14 @@ def replace_seq_info(reference_sequence:MutableSeq, variant_info:pd.Series, cont
     context: The number of bp after and before the start and end, respectively, to be considered
     to produce a subsequence with context surrounding the variant.
     '''
-    mutable_sequence = MutableSeq(reference_sequence)
+    mutable_sequence = reference_sequence
     variant_info = variant_info
     start = int(variant_info['start'])-1
-    end = int(variant_info['end'])-1
+    end = int(variant_info['end']) # Se quito un -1
     # Insert mutation
     mutable_sequence[start] = variant_info['Variant_seq']
     # Extract subsequence with mutation and context
-    variant_sequence = mutable_sequence[start-context:end+context+1]
+    variant_sequence = mutable_sequence[start-context:end+context] #Se quito un +1 despues de context
     variant_sequence = variant_sequence.upper()
     # Convert into unmutable sequence
     variant_sequence = Seq(variant_sequence)
@@ -64,11 +64,20 @@ def replace_seq_info(reference_sequence:MutableSeq, variant_info:pd.Series, cont
     return variant_sequence
 
 
-def export_variants_df(mutable_sequence: MutableSeq, variants_info:pd.DataFrame):
+def export_variants_df(mutable_sequence: MutableSeq|SeqRecord|Seq, variants_info:pd.DataFrame)-> pd.DataFrame:
     '''
     This function exports the modified sequences with all the relevant information to a DataFrame.
+
+    Parameters:
+    -----------
+    mutable_sequence: the nucleotide sequence to be modified, can be a MutableSeq, SeqRecord or Seq
     
     '''
+    if type(mutable_sequence) == SeqRecord:
+        mutable_sequence = MutableSeq(mutable_sequence.seq)
+    elif type(mutable_sequence) == Seq:
+        mutable_sequence = MutableSeq(mutable_sequence)
+
     variants_info = variants_info
     mutable_sequence = mutable_sequence
     variant_sequences_data = {'sequence':[],

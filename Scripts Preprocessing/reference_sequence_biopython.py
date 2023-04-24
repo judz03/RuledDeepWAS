@@ -25,13 +25,14 @@ reference_genome = SeqIO.index(reference_genome_path,"fasta")
 ensembl_db = load_db(databases_path+'Ensembl_database_ready.csv')
 
 # %% Extract the SeqRecord of the chromosomes into a dict and then put them into a dataframe
-# DO NOT RUN UNLESS ENOUGH RAM
 reference_genome_keys = list(reference_genome.keys())
 chromosome_keys = []
 for key in reference_genome_keys:
     if 'CM' in key:
         chromosome_keys.append(key)
 
+# %% Create a dictionary which contains each chromosome sequence
+# DO NOT RUN UNLESS ENOUGH RAM
 chromosomes_dict = {}
 
 for key in chromosome_keys:
@@ -54,15 +55,13 @@ chromosome_21_snvs = chromosome_21_variants.loc[chromosome_21_variants['type']==
 # Extract all the SNVs with only 1 variant allele
 chromosome_21_single_allele_snv = chromosome_21_snvs.loc[chromosome_21_snvs['Variant_seq'].str.len()==1]
 # %% Replace the variant information in the reference sequence
-variant_sequences_data = {'sequence':[],
-                          'id':[],
-                          'chromosome':[],
-                          'start':[],
-                          'end':[],
-                          'Dbxref':[],
-                          'clinical_significance':[]}
-
 # To extract all the SeqRecords in a dictionary and save them in a df
-
-
 chromosome_21_modified_df = export_variants_df(chromosome_21_sequence,chromosome_21_single_allele_snv)
+
+# %% Test for chromosome 1
+chromosome_1_record = reference_genome[reference_genome_keys[0]]
+chromosome_1_variants = ensembl_db.loc[ensembl_db['seqid']=='1']
+chromosome_1_snvs = chromosome_1_variants.loc[chromosome_1_variants['type']=='SNV']
+chromosome_1_single_allele_snv = chromosome_1_snvs.loc[chromosome_1_snvs['Variant_seq'].str.len()==1]
+
+# %%
