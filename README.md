@@ -6,5 +6,3 @@ Here we store all the code concerning to my thesis project. As well, include all
 * My laptop's WSL in Windows partition
 * My laptop's PopOS partition
 * One PC from the laboratory
-
-## Este es un cambio que se hizo en el branch the HPWSL
