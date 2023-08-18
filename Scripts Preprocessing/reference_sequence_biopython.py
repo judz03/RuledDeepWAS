@@ -18,11 +18,11 @@ import pandas as pd
 from utils import replace_seq_info, export_variants_df
 
 #%% Import the reference sequence
-databases_path = '/home/msr/Documents/Experimentos/Databases/'
-reference_genome_path = databases_path + 'GCA_000001405.28/GCA_000001405.28_GRCh38.p13_genomic.fna'
+databases_path = '/mnt/sda1/Databases/'
+reference_genome_path = databases_path + 'Reference Genome/GCA_000001405.28_GRCh38.p13_genomic.fna'
 reference_genome = SeqIO.index(reference_genome_path,"fasta")
 
-ensembl_db = load_db(databases_path+'Ensembl_database_ready.csv')
+ensembl_db = load_db(databases_path+'Ensembl/Ensembl_database_ready.csv')
 
 # %% Extract the SeqRecord of the chromosomes into a dict and then put them into a dataframe
 reference_genome_keys = list(reference_genome.keys())

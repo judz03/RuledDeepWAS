@@ -1,0 +1,79 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is a notebook to analyze and produce relevant plots about the analysis of the data from Ensemble Variation database.
+
+```{r}
+# Import librares
+library(chromoMap)
+library(tidyverse)
+```
+
+Import the data we extracted from the chromosome 1 VCF file with help of bcftools
+```{r}
+chromosome_data_path <- "/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/"
+chromosome_n <- "chr3_data.tsv"
+chromosome_n <- read_tsv(paste0(chromosome_data_path, chromosome_n))
+names(chromosome_n)[1] <- "CHROM"
+names(chromosome_n)[2] <- "POS"
+names(chromosome_n)[3] <- "REF"
+names(chromosome_n)[4] <- "ALT"
+names(chromosome_n)[5] <- "TSA"
+names(chromosome_n)[6] <- "ID"
+```
+
+Count the number of times a single locus is appears in the data
+```{r}
+counts <- chromosome_n %>% count(POS, sort = TRUE)
+# Change the values of the CHROM column to make them compatible with chromoMap
+counts$chrom <- "chr3"
+counts$name <- "chr3_var"
+names(counts)[1] <- "start"
+names(counts)[2] <- "data"
+counts$end <- counts$start
+head(counts, 10)
+```
+
+Format the data for correct plotting with chromoMap:
+```{r}
+counts <- counts[, c('name','chrom','start','end','data')]
+# Save for future use
+output_path <- '/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/position_analysis/'
+write_csv(counts, paste0(output_path,'chromosome3_repeated_positions.csv'))
+
+# Filter those positions that appear 10 or more times
+filtered_counts <- filter(counts, data >= 10)
+head(filtered_counts)
+write_csv(filtered_counts, paste0(output_path, 'filtered/chr2_filt_pos.csv'))
+```
+
+
+Plot the chromoMap example to look how the data has to be imputed
+```{r}
+chromosomes <- read.table("/home/moisessotelo/Documents/Universidad de Guadalajara/MBCI/Projecto/RuledDeepWAS/Scripts Preprocessing/chromosome_coordinates.txt", 
+                          sep = "", header=TRUE) #add path
+#annotation <- read.csv("./annotation.csv", header=TRUE) #add 
+
+
+chromoMap(list(chromosomes), list(filtered_counts), data_based_color_map=T,
+          data_type = 'numeric', plots = "bar")
+```
+
+# Create a vector of numbers from 1 to 10
+numbers <- 1:10
+
+# Use the paste function to create labels
+label_list <- paste("label", numbers, sep = "_")
+
+# Print the vector of labels
+print(label_list)
+
+
+
+
+
+
+
+
