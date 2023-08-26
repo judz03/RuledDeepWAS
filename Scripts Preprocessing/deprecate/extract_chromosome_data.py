@@ -5,7 +5,7 @@ bcftools program.
 '''
 
 # Define the range of numbers you want to iterate over
-""" for i in range(3, 22):
+for i in range(3, 22):
     # Construct the output filename with the current number
     output_filename = f"/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/chr{i}_data.tsv"
 
@@ -16,14 +16,15 @@ bcftools program.
     cmd = [
         "bcftools",
         "query",
-        "-f", "'%CHROM\t%POS\t%REF\t%ALT\t%TSA\t%ID'",
+        "-f", '%CHROM\t%POS\t%REF\t%ALT\t%TSA\t%ID',
         "-H",
         "-o", output_filename,
         input_filename
     ]
 
     # Run the command
-    subprocess.run(cmd) """
+    subprocess.run(cmd)
+'''
 # Construct the output filename with the current number
 output_filename = f"/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/chr22_data.tsv"
 
@@ -42,5 +43,6 @@ cmd = [
 
 # Run the command
 subprocess.run(cmd)
+'''
 
 print("Processing complete.")

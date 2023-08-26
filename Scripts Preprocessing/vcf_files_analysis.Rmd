@@ -14,7 +14,7 @@ library(tidyverse)
 Import the data we extracted from the chromosome 1 VCF file with help of bcftools
 ```{r}
 chromosome_data_path <- "/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/"
-chromosome_n <- "chr3_data.tsv"
+chromosome_n <- "chr6_data.tsv"
 chromosome_n <- read_tsv(paste0(chromosome_data_path, chromosome_n))
 names(chromosome_n)[1] <- "CHROM"
 names(chromosome_n)[2] <- "POS"
@@ -28,8 +28,8 @@ Count the number of times a single locus is appears in the data
 ```{r}
 counts <- chromosome_n %>% count(POS, sort = TRUE)
 # Change the values of the CHROM column to make them compatible with chromoMap
-counts$chrom <- "chr3"
-counts$name <- "chr3_var"
+counts$chrom <- "chr6"
+counts$name <- "chr6_var"
 names(counts)[1] <- "start"
 names(counts)[2] <- "data"
 counts$end <- counts$start
@@ -41,12 +41,12 @@ Format the data for correct plotting with chromoMap:
 counts <- counts[, c('name','chrom','start','end','data')]
 # Save for future use
 output_path <- '/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/position_analysis/'
-write_csv(counts, paste0(output_path,'chromosome3_repeated_positions.csv'))
+write_csv(counts, paste0(output_path,'chromosome6_repeated_positions.csv'))
 
 # Filter those positions that appear 10 or more times
 filtered_counts <- filter(counts, data >= 10)
 head(filtered_counts)
-write_csv(filtered_counts, paste0(output_path, 'filtered/chr2_filt_pos.csv'))
+write_csv(filtered_counts, paste0(output_path, 'filtered/chr6_filt_pos.csv'))
 ```
 
 
@@ -57,21 +57,97 @@ chromosomes <- read.table("/home/moisessotelo/Documents/Universidad de Guadalaja
 #annotation <- read.csv("./annotation.csv", header=TRUE) #add 
 
 
-chromoMap(list(chromosomes), list(filtered_counts), data_based_color_map=T,
+chromoMap(list(chromosomes), list(combined_data), data_based_color_map=T,
           data_type = 'numeric', plots = "bar")
 ```
 
-# Create a vector of numbers from 1 to 10
-numbers <- 1:10
+## Attempt to automatize the process of counting and filtering repeated positions from the VCF files
+```{r}
+chromosomes <- as.character(c(9:22, "X", "Y"))
+chromosome_data_path <- "/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/"
+output_path <- '/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/position_analysis/'
 
-# Use the paste function to create labels
-label_list <- paste("label", numbers, sep = "_")
+for (chromosome in chromosomes){
+# Paste all the code I already have
+# This block was commented because it was used to extract and format the position counts in each chromosome
+  # chromosome_n <- paste0("chr",chromosome,"_data.tsv")
+  # chromosome_n <- read_tsv(paste0(chromosome_data_path, chromosome_n))
+  # names(chromosome_n)[1] <- "CHROM"
+  # names(chromosome_n)[2] <- "POS"
+  # names(chromosome_n)[3] <- "REF"
+  # names(chromosome_n)[4] <- "ALT"
+  # names(chromosome_n)[5] <- "TSA"
+  # names(chromosome_n)[6] <- "ID"
+  # 
+  # # Count the repeated positions
+  # counts <- chromosome_n %>% count(POS, sort = TRUE)
+  # # Change the values of the CHROM column to make them compatible with chromoMap
+  # counts$chrom <- paste0("chr", chromosome)
+  # counts$name <- paste0("chr", chromosome,"_var")
+  # names(counts)[1] <- "start"
+  # names(counts)[2] <- "data"
+  # counts$end <- counts$start
+  # 
+  # # Change the column order to avoid compatibility issues with chromoMap
+  # counts <- counts[, c('name','chrom','start','end','data')]
+  # # Save for future use
+  # 
+  # write_csv(counts, paste0(output_path,'chromosome', chromosome, '_repeated_positions.csv'))
+  
+  # Filter those positions that appear 10 or more times
+  filtered_counts <- filter(counts, data >= 10)
+  head(filtered_counts)
+  write_csv(filtered_counts, paste0(output_path, 'filtered/chr',  chromosome, '_filt_pos.csv'))
+}
+```
+# Import the repeated position counts files
+```{r}
+file_list <- list.files(path ="/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/position_analysis/",
+                        pattern = ".csv", include.dirs = TRUE)
+counts_path <- "/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/position_analysis/"
+n <- 10
+chromosome_list <- c(as.character(1:22), "X", "Y")
+i <- 1
+for (file in file_list) {
+  counts <- read_csv(paste0(counts_path, file))
+  # Filter those positions that appear n or more times
+  filtered_counts <- filter(counts, data >= n)
+  head(filtered_counts)
+  write_csv(filtered_counts, paste0(output_path, 'filtered_n5/chr',  chromosome_list[i], '_filt_pos_over5.csv'))
+  i <- i+1
+}
+```
 
-# Print the vector of labels
-print(label_list)
+
+# Concatenate the position-filtered files
+```{r}
+file_list <- list.files(path ="/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/position_analysis/filtered/",
+                        pattern = ".csv", include.dirs = TRUE)
+filtered_counts_path <- "/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/position_analysis/filtered/"
+#filtered_counts_over5_path <- "/mnt/sda1/Databases/Ensembl/Variation/110/chromosomes_data/position_analysis/filtered_n5//"
+#file <- file_list[2]
+
+combined_data <- data.frame()  # Initialize an empty data frame
+
+for (file in file_list) {
+  data <- read.csv(paste0(filtered_counts_path,file), header = FALSE, skip = 1) #First parameter was changed
+  #print(paste('Loaded file', file))
+  combined_data <- bind_rows(combined_data, data)
+}
+```
+
+There are no variants which positions are repeated more than 10 times in the chromosome Y.
+
+Plot the chromoMap example to look how the data has to be imputed
+```{r}
+chromosomes <- read.table("/home/moisessotelo/Documents/Universidad de Guadalajara/MBCI/Projecto/RuledDeepWAS/Scripts Preprocessing/chromosome_coordinates.txt", 
+                          sep = "", header=TRUE) #add path
+#annotation <- read.csv("./annotation.csv", header=TRUE) #add 
 
 
-
+chromoMap(list(chromosomes), list(combined_data), data_based_color_map=T,
+          data_type = 'numeric', plots = "bar")
+```
 
 
 
