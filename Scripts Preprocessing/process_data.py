@@ -4,7 +4,7 @@ from Bio.Seq import MutableSeq, Seq
 import pandas as pd
 import subprocess
 
-def generate_bed(chr_n_snps: pd.DataFrame, chromosome: str=None, res_path: str = None, gen_bed:bool = False):
+def generate_bed(chr_n_snps: pd.DataFrame, len_sequence: int = 64, chromosome: str=None, res_path: str = None, gen_bed:bool = False):
     '''
     Function to process the data from the VCF files from Ensembl Variation.
     Limited to single alternate alleles and SNPs. Check the `data_processing.ipynb` file for additional reference
@@ -22,8 +22,8 @@ def generate_bed(chr_n_snps: pd.DataFrame, chromosome: str=None, res_path: str =
     
     # Create the list of alternative alleles
     chr_n_snps["alt_list"] = chr_n_snps["alt"].str.split(pat=",")
-    chr_n_snps['start'] = chr_n_snps['pos'].astype(int) - 63
-    chr_n_snps['end'] = chr_n_snps['pos'].astype(int) + 64
+    chr_n_snps['start'] = chr_n_snps['pos'].astype(int) - (len_sequence-1)
+    chr_n_snps['end'] = chr_n_snps['pos'].astype(int) + len_sequence
     chr_n_snps['bed'] = chr_n_snps['chr'].astype(str) + ':' + chr_n_snps['start'].astype(str) + '-' + chr_n_snps['end'].astype(str)
     if gen_bed == True: chr_n_snps['bed'].to_csv('{}/bed_chr{}'.format(res_path, chromosome), sep='\t', index=False, header=False)
     return chr_n_snps
