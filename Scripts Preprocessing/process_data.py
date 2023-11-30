@@ -73,7 +73,7 @@ def generate_sequences(variant_df: pd.DataFrame, chromosome: str, seq_path: str,
     # Generate the subsequences for variants, including the multiallelic ones
     alt_seq = []
     for idx, variant in enumerate(variant_df['alt_list']):
-        tmp_alt_seq = [] # Clear the contents of this list each time the for loop goes to a new register
+        tmp_alt_seq = [] # Clear the contents of this list each time the for loop goes to a new row
         for allele in variant:
             tmp_seq = MutableSeq(variant_df['ref_seq'].iloc[idx])
             tmp_seq[63] = allele
